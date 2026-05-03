@@ -179,7 +179,7 @@ export default function App() {
       setInputs(loadedInputs);
       setFileName(file.name);
     } catch (err) {
-      setError(err.message || "No se pudo leer el Excel.");
+      setError(err.message || "Excel file unable to read.");
     }
   }
 
@@ -202,13 +202,13 @@ export default function App() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">RE DCF Web App</h1>
             <p className="text-slate-600">
-              Carga el Excel, lee la pestaña Inputs y calcula VALUE con iteración circular tipo Excel.
+              Load the Excel file, read the Inputs sheet and calculate VALUE using circular iteration.
             </p>
           </div>
 
           <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-white shadow-sm hover:bg-slate-800">
             <Upload className="h-4 w-4" />
-            Cargar RE_DCF.xlsx
+            Upload RE_DCF.xlsx
             <input type="file" accept=".xlsx,.xls" onChange={handleFileUpload} className="hidden" />
           </label>
         </div>
@@ -345,7 +345,7 @@ export default function App() {
 
         <div className="flex justify-end">
           <Button onClick={() => setInputs(DEFAULT_INPUTS)}>
-            Restaurar inputs base
+            Restore inputs base
           </Button>
         </div>
       </div>
