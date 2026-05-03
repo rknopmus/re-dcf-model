@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import * as XLSX from "xlsx";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "./components/ui/card";
+import { Button } from "./components/ui/button";
 import { Upload, Calculator, FileSpreadsheet } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line,
