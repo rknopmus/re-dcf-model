@@ -64,26 +64,26 @@ function readInputsFromWorkbook(workbook) {
 
   return {
     rentMonthM2: getCellNumber(sheet, "B2", DEFAULT_INPUTS.rentMonthM2),
-    meters: getCellNumber(sheet, "B3", DEFAULT_INPUTS.meters),
-    inflationRate: getCellNumber(sheet, "B4", DEFAULT_INPUTS.inflationRate),
-    capRate: getCellNumber(sheet, "B5", DEFAULT_INPUTS.capRate),
-    discountRate: getCellNumber(sheet, "B6", DEFAULT_INPUTS.discountRate),
-    vacancyRate: getCellNumber(sheet, "B7", DEFAULT_INPUTS.vacancyRate),
-    vacancyGrowth: getCellNumber(sheet, "C7", DEFAULT_INPUTS.vacancyGrowth),
-    repairs: getCellNumber(sheet, "B8", DEFAULT_INPUTS.repairs),
-    repairsGrowth: getCellNumber(sheet, "C8", DEFAULT_INPUTS.repairsGrowth),
-    realEstateTaxRate: getCellNumber(sheet, "B9", DEFAULT_INPUTS.realEstateTaxRate),
-    taxGrowth: getCellNumber(sheet, "C9", DEFAULT_INPUTS.taxGrowth),
+    meters: getCellNumber(sheet, "B4", DEFAULT_INPUTS.meters),
+    inflationRate: getCellNumber(sheet, "B5", DEFAULT_INPUTS.inflationRate),
+    capRate: getCellNumber(sheet, "B6", DEFAULT_INPUTS.capRate),
+    discountRate: getCellNumber(sheet, "B7", DEFAULT_INPUTS.discountRate),
+    vacancyRate: getCellNumber(sheet, "B8", DEFAULT_INPUTS.vacancyRate),
+    vacancyGrowth: getCellNumber(sheet, "C8", DEFAULT_INPUTS.vacancyGrowth),
+    repairs: getCellNumber(sheet, "B10", DEFAULT_INPUTS.repairs),
+    repairsGrowth: getCellNumber(sheet, "C10", DEFAULT_INPUTS.repairsGrowth),
+    realEstateTaxRate: getCellNumber(sheet, "B11", DEFAULT_INPUTS.realEstateTaxRate),
+    taxGrowth: getCellNumber(sheet, "C11", DEFAULT_INPUTS.taxGrowth),
     insuranceRate: DEFAULT_INPUTS.insuranceRate,
-    insuranceGrowth: getCellNumber(sheet, "C10", DEFAULT_INPUTS.insuranceGrowth),
-    hoa: getCellNumber(sheet, "B11", DEFAULT_INPUTS.hoa),
-    hoaGrowth: getCellNumber(sheet, "C11", DEFAULT_INPUTS.hoaGrowth),
-    reserve: getCellNumber(sheet, "B12", DEFAULT_INPUTS.reserve),
-    reserveGrowth: getCellNumber(sheet, "C12", DEFAULT_INPUTS.reserveGrowth),
+    insuranceGrowth: getCellNumber(sheet, "C12", DEFAULT_INPUTS.insuranceGrowth),
+    hoa: getCellNumber(sheet, "B13", DEFAULT_INPUTS.hoa),
+    hoaGrowth: getCellNumber(sheet, "C13", DEFAULT_INPUTS.hoaGrowth),
+    reserve: getCellNumber(sheet, "B14", DEFAULT_INPUTS.reserve),
+    reserveGrowth: getCellNumber(sheet, "C14", DEFAULT_INPUTS.reserveGrowth),
   };
 }
 
-function calculateModel(inputs, years = 10, maxIter = 10000, tolerance = 1e-8) {
+function calculateModel(inputs, years = 11, maxIter = 10000, tolerance = 1e-8) {
   let value = 0;
   let iteration = 0;
 
@@ -95,7 +95,7 @@ function calculateModel(inputs, years = 10, maxIter = 10000, tolerance = 1e-8) {
     rows[i].vacancyLoss = rows[i].rent * rows[i].vacancyRate;
     rows[i].income = rows[i].rent - rows[i].vacancyLoss;
     rows[i].hoa = i === 0 ? inputs.hoa : rows[i - 1].hoa * (1 + inputs.hoaGrowth);
-    rows[i].reserve = i === 0 ? inputs.reserve : rows[i - 1].reserve * (1 + inputs.reserveGrowth);
+    rows[i].reserve = i === 0 ? inputs.reserve : rows[i - 1].reserve * (1 + inputs.hoaGrowth);
   }
 
   for (iteration = 1; iteration <= maxIter; iteration++) {
