@@ -34,6 +34,7 @@ const DEFAULT_INPUTS = {
   hoaGrowth: 0,
   reserve: 500,
   reserveGrowth: 0,
+  maturity: 11
 };
 
 function money(value) {
@@ -64,6 +65,7 @@ function readInputsFromWorkbook(workbook) {
 
   return {
     rentMonthM2: getCellNumber(sheet, "B2", DEFAULT_INPUTS.rentMonthM2),
+    maturity: DEFAULT_INPUTS.maturity,
     meters: getCellNumber(sheet, "B4", DEFAULT_INPUTS.meters),
     inflationRate: getCellNumber(sheet, "B5", DEFAULT_INPUTS.inflationRate),
     capRate: getCellNumber(sheet, "B6", DEFAULT_INPUTS.capRate),
@@ -83,7 +85,8 @@ function readInputsFromWorkbook(workbook) {
   };
 }
 
-function calculateModel(inputs, years = 11, maxIter = 10000, tolerance = 1e-8) {
+function calculateModel(inputs, maxIter = 10000, tolerance = 1e-8) {
+  const years = inputs.maturity || 11;
   let value = 0;
   let iteration = 0;
 
@@ -126,7 +129,29 @@ function calculateModel(inputs, years = 11, maxIter = 10000, tolerance = 1e-8) {
     row.discountedCashFlow = (row.noi + row.terminalValue) / Math.pow(1 + inputs.discountRate, i + 1);
   });
 
-  return { value, rows, iteration };
+  // IRR calculation
+  const cashFlows = rows.map((r) => r.noi);
+  cashFlows[cashFlows.length - 1] += terminalValue;
+
+  function calculateIRR(flows, guess = 0.1) {
+    let rate = guess;
+    for (let i = 0; i < 1000; i++) {
+      let npv = 0;
+      let dnpv = 0;
+      for (let t = 0; t < flows.length; t++) {
+        npv += flows[t] / Math.pow(1 + rate, t + 1);
+        dnpv -= (t + 1) * flows[t] / Math.pow(1 + rate, t + 2);
+      }
+      const newRate = rate - npv / dnpv;
+      if (Math.abs(newRate - rate) < 1e-6) return newRate;
+      rate = newRate;
+    }
+    return rate;
+  }
+
+  const irr = calculateIRR(cashFlows);
+
+  return { value, rows, iteration, irr };
 }
 
 export default function App() {
@@ -158,15 +183,60 @@ export default function App() {
     }
   }
 
+  function isRate(key) {
+    return [
+      "inflationRate",
+      "capRate",
+      "discountRate",
+      "vacancyRate",
+      "vacancyGrowth",
+      "repairsGrowth",
+      "realEstateTaxRate",
+      "taxGrowth",
+      "insuranceGrowth",
+      "hoaGrowth",
+      "reserveGrowth"
+    ].includes(key);
+  }
+
   function updateInput(key, value) {
-    setInputs((current) => ({ ...current, [key]: Number(value) || 0 }));
+    const numeric = Number(value) || 0;
+    setInputs((current) => ({
+      ...current,
+      [key]: isRate(key) ? numeric / 100 : numeric
+    }));
   }
 
   function getInputStep(key) {
     if (key === "rentMonthM2") return "1";
     if (key === "meters") return "1";
+    if (key === "maturity") return "1";
     if (key === "repairs" || key === "hoa" || key === "reserve") return "100";
-    return "0.001";
+    return isRate(key) ? "0.1" : "0.001";
+  }
+
+  function getInputLabel(key) {
+    const labels = {
+      rentMonthM2: "Rent / Month / m²",
+      meters: "Area (m²)",
+      inflationRate: "Rent Growth (%)",
+      capRate: "Exit Cap Rate (%)",
+      discountRate: "Discount Rate (%)",
+      vacancyRate: "Vacancy Rate (%)",
+      vacancyGrowth: "Vacancy Growth (%)",
+      repairs: "Repairs",
+      repairsGrowth: "Repairs Growth (%)",
+      realEstateTaxRate: "Real Estate Tax Rate (%)",
+      taxGrowth: "Tax Growth (%)",
+      insuranceRate: "Insurance Rate (%)",
+      insuranceGrowth: "Insurance Growth (%)",
+      hoa: "HOA",
+      hoaGrowth: "HOA Growth (%)",
+      reserve: "Reserve",
+      reserveGrowth: "Reserve Growth (%)",
+      maturity: "Maturity (Years)"
+    };
+    return labels[key] || key;
   }
 
   function startNewValuation() {
@@ -212,7 +282,15 @@ export default function App() {
           <Card className="rounded-2xl shadow-sm md:col-span-2">
             <CardContent className="p-5">
               <div className="flex items-center gap-2 text-sm text-slate-500"><Calculator className="h-4 w-4" /> VALUE</div>
-              <div className="mt-2 text-4xl font-bold">{result ? money(result.value) : "-"}</div>
+              <div className="mt-2 text-4xl font-bold">{result ? money(result.value) : "-"}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl shadow-sm">
+          <CardContent className="p-5">
+            <div className="text-sm text-slate-500">IRR</div>
+            <div className="mt-2 text-4xl font-bold">{result ? pct(result.irr) : "-"}</div>
             </CardContent>
           </Card>
           
@@ -225,11 +303,11 @@ export default function App() {
               <div className="grid grid-cols-1 gap-3">
                 {inputs ? Object.entries(inputs).map(([key, value]) => (
                   <label key={key} className="space-y-1">
-                    <span className="text-xs font-medium uppercase text-slate-500">{key}</span>
+                    <span className="text-xs font-medium uppercase text-slate-500">{getInputLabel(key)}</span>
                     <input
                       type="number"
                       step={getInputStep(key)}
-                      value={value}
+                      value={isRate(key) ? (value * 100).toFixed(2) : value}
                       onChange={(e) => updateInput(key, e.target.value)}
                       className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 outline-none focus:border-slate-500"
                     />
