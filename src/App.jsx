@@ -130,23 +130,38 @@ function calculateModel(inputs, maxIter = 10000, tolerance = 1e-8) {
   });
 
   // IRR calculation
-  const cashFlows = rows.map((r) => r.noi);
+  // Initial investment is negative VALUE at year 0.
+  // Then yearly cash flows are NOI, with Terminal Value added in the final year.
+  const initialInvestment = -value;
+  const cashFlows = [initialInvestment, ...rows.map((r) => r.noi)];
   cashFlows[cashFlows.length - 1] += terminalValue;
 
   function calculateIRR(flows, guess = 0.1) {
     let rate = guess;
+
     for (let i = 0; i < 1000; i++) {
       let npv = 0;
       let dnpv = 0;
+
       for (let t = 0; t < flows.length; t++) {
-        npv += flows[t] / Math.pow(1 + rate, t + 1);
-        dnpv -= (t + 1) * flows[t] / Math.pow(1 + rate, t + 2);
+        npv += flows[t] / Math.pow(1 + rate, t);
+
+        if (t > 0) {
+          dnpv -= t * flows[t] / Math.pow(1 + rate, t + 1);
+        }
       }
+
+      if (Math.abs(dnpv) < 1e-12) return null;
+
       const newRate = rate - npv / dnpv;
-      if (Math.abs(newRate - rate) < 1e-6) return newRate;
+
+      if (!Number.isFinite(newRate) || newRate <= -0.9999) return null;
+      if (Math.abs(newRate - rate) < 1e-8) return newRate;
+
       rate = newRate;
     }
-    return rate;
+
+    return null;
   }
 
   const irr = calculateIRR(cashFlows);
