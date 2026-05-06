@@ -85,7 +85,7 @@ function readInputsFromWorkbook(workbook) {
   };
 }
 
-function calculateModel(inputs, maxIter = 10000, tolerance = 1e-8) {
+function calculateModel(inputs, fixedInitialValue = null, maxIter = 10000, tolerance = 1e-8) {
   const years = inputs.maturity || 11;
   let value = 0;
   let iteration = 0;
@@ -132,7 +132,7 @@ function calculateModel(inputs, maxIter = 10000, tolerance = 1e-8) {
   // IRR calculation
   // Initial investment is negative VALUE at year 0.
   // Then yearly cash flows are NOI, with Terminal Value added in the final year.
-  const initialInvestment = -value;
+  const initialInvestment = -(fixedInitialValue ?? value);
   const cashFlows = [initialInvestment, ...rows.map((r) => r.noi)];
   cashFlows[cashFlows.length - 1] += terminalValue;
 
@@ -174,8 +174,9 @@ export default function App() {
   const [fileName, setFileName] = useState("No file loaded");
   const [error, setError] = useState("");
   const [fileInputKey, setFileInputKey] = useState(Date.now());
+  const [fixedInitialValue, setFixedInitialValue] = useState(null);
 
-  const result = useMemo(() => inputs ? calculateModel(inputs) : null, [inputs]);
+  const result = useMemo(() => inputs ? calculateModel(inputs, fixedInitialValue) : null, [inputs, fixedInitialValue]);
 
   // Reset automático al cargar la app
   useEffect(() => {
@@ -191,6 +192,8 @@ export default function App() {
       const buffer = await file.arrayBuffer();
       const workbook = XLSX.read(buffer, { type: "array", cellFormula: true, cellStyles: true });
       const loadedInputs = readInputsFromWorkbook(workbook);
+      const initialResult = calculateModel(loadedInputs, null);
+      setFixedInitialValue(initialResult.value);
       setInputs(loadedInputs);
       setFileName(file.name);
     } catch (err) {
@@ -259,6 +262,7 @@ export default function App() {
     setFileName("No file loaded");
     setError("");
     setFileInputKey(Date.now());
+    setFixedInitialValue(null);
   }
 
   const chartData = result ? result.rows.map((row) => ({
