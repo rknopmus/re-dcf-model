@@ -162,6 +162,13 @@ export default function App() {
     setInputs((current) => ({ ...current, [key]: Number(value) || 0 }));
   }
 
+  function getInputStep(key) {
+    if (key === "rentMonthM2") return "1";
+    if (key === "meters") return "1";
+    if (key === "repairs" || key === "hoa" || key === "reserve") return "100";
+    return "0.001";
+  }
+
   function startNewValuation() {
     setInputs(null);
     setFileName("No file loaded");
@@ -221,7 +228,7 @@ export default function App() {
                     <span className="text-xs font-medium uppercase text-slate-500">{key}</span>
                     <input
                       type="number"
-                      step="0.0001"
+                      step={getInputStep(key)}
                       value={value}
                       onChange={(e) => updateInput(key, e.target.value)}
                       className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 outline-none focus:border-slate-500"
