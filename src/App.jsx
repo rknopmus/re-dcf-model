@@ -284,9 +284,9 @@ export default function App() {
                       <YAxis tickFormatter={(v) => `$${Math.round(v / 1000)}k`} />
                       <Tooltip formatter={(v) => money(v)} />
                       <Legend />
-                      <Bar dataKey="Income" />
-                      <Bar dataKey="Expenses" />
-                      <Bar dataKey="NOI" />
+<Bar dataKey="Income" fill="#3b82f6" />
+<Bar dataKey="Expenses" fill="#ef4444" />
+<Bar dataKey="NOI" fill="#10b981" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
