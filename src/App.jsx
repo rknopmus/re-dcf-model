@@ -204,16 +204,11 @@ export default function App() {
           </Card>
           <Card className="rounded-2xl shadow-sm md:col-span-2">
             <CardContent className="p-5">
-              <div className="flex items-center gap-2 text-sm text-slate-500"><Calculator className="h-4 w-4" /> VALUE / Model!H1</div>
+              <div className="flex items-center gap-2 text-sm text-slate-500"><Calculator className="h-4 w-4" /> VALUE</div>
               <div className="mt-2 text-4xl font-bold">{result ? money(result.value) : "-"}</div>
             </CardContent>
           </Card>
-          <Card className="rounded-2xl shadow-sm">
-            <CardContent className="p-5">
-              <div className="text-sm text-slate-500">Iteraciones</div>
-              <div className="mt-2 text-4xl font-bold">{result ? result.iteration : "-"}</div>
-            </CardContent>
-          </Card>
+          
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
