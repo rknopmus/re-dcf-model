@@ -60,7 +60,7 @@ function getCellNumber(sheet, address, fallback = 0) {
 
 function readInputsFromWorkbook(workbook) {
   const sheet = workbook.Sheets.Inputs;
-  if (!sheet) throw new Error("No se encontró la pestaña 'Inputs'.");
+  if (!sheet) throw new Error("'Inputs' sheet not found.");
 
   return {
     rentMonthM2: getCellNumber(sheet, "B2", DEFAULT_INPUTS.rentMonthM2),
@@ -131,7 +131,7 @@ function calculateModel(inputs, years = 10, maxIter = 10000, tolerance = 1e-8) {
 
 export default function App() {
   const [inputs, setInputs] = useState(null);
-  const [fileName, setFileName] = useState("Sin archivo cargado");
+  const [fileName, setFileName] = useState("No file loaded");
   const [error, setError] = useState("");
   const [fileInputKey, setFileInputKey] = useState(Date.now());
 
@@ -154,7 +154,7 @@ export default function App() {
       setInputs(loadedInputs);
       setFileName(file.name);
     } catch (err) {
-      setError(err.message || "No se pudo leer el Excel.");
+      setError(err.message || "Could not read the Excel file.");
     }
   }
 
@@ -164,7 +164,7 @@ export default function App() {
 
   function startNewValuation() {
     setInputs(null);
-    setFileName("Sin archivo cargado");
+    setFileName("No file loaded");
     setError("");
     setFileInputKey(Date.now());
   }
@@ -183,12 +183,12 @@ export default function App() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">RE DCF Web App</h1>
-            <p className="text-slate-600">Carga el mismo Excel, lee la pestaña Inputs y calcula VALUE con iteración circular tipo Excel.</p>
+            <p className="text-slate-600">Upload the Excel file, read the Inputs sheet and calculate VALUE using circular iteration.</p>
           </div>
 
           <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-white shadow-sm hover:bg-slate-800">
             <Upload className="h-4 w-4" />
-            Cargar RE_DCF.xlsx
+            Upload RE_DCF.xlsx
             <input key={fileInputKey} type="file" accept=".xlsx,.xls" onChange={handleFileUpload} className="hidden" />
           </label>
         </div>
@@ -198,7 +198,7 @@ export default function App() {
         <div className="grid gap-4 md:grid-cols-4">
           <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-5">
-              <div className="flex items-center gap-2 text-sm text-slate-500"><FileSpreadsheet className="h-4 w-4" /> Archivo</div>
+              <div className="flex items-center gap-2 text-sm text-slate-500"><FileSpreadsheet className="h-4 w-4" /> File</div>
               <div className="mt-2 truncate text-lg font-semibold">{fileName}</div>
             </CardContent>
           </Card>
@@ -229,7 +229,7 @@ export default function App() {
                   </label>
                 )) : (
                   <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
-                    Carga un Excel para iniciar una nueva valoración.
+                    Upload an Excel file to start a new valuation.
                   </div>
                 )}
               </div>
@@ -239,7 +239,7 @@ export default function App() {
           <div className="space-y-6 lg:col-span-2">
             <Card className="rounded-2xl shadow-sm">
               <CardContent className="p-5">
-                <h2 className="mb-4 text-xl font-semibold">Income, Expenses y NOI</h2>
+                <h2 className="mb-4 text-xl font-semibold">Income, Expenses and NOI</h2>
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData}>
@@ -279,7 +279,7 @@ export default function App() {
 
         <Card className="rounded-2xl shadow-sm">
           <CardContent className="overflow-x-auto p-5">
-            <h2 className="mb-4 text-xl font-semibold">Tabla del modelo</h2>
+            <h2 className="mb-4 text-xl font-semibold">Model Table</h2>
             <table className="w-full min-w-[900px] border-collapse text-sm">
               <thead>
                 <tr className="border-b bg-slate-100 text-left">
@@ -304,7 +304,7 @@ export default function App() {
                 )) : (
                   <tr>
                     <td colSpan="6" className="p-4 text-center text-slate-500">
-                      Sin valoración cargada.
+                      No valuation loaded.
                     </td>
                   </tr>
                 )}
@@ -314,7 +314,7 @@ export default function App() {
         </Card>
 
         <div className="flex justify-end">
-          <Button onClick={startNewValuation} className="rounded-2xl">Nueva valoración</Button>
+          <Button onClick={startNewValuation} className="rounded-2xl">New Valuation</Button>
         </div>
       </div>
     </div>
