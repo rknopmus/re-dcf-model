@@ -278,7 +278,7 @@ export default function App() {
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">RE DCF Web App</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Real Estate DCF - Roberto Knop</h1>
             <p className="text-slate-600">Upload the Excel file, read the Inputs sheet and calculate VALUE using circular iteration.</p>
           </div>
 
@@ -287,6 +287,9 @@ export default function App() {
             Upload RE_DCF.xlsx
             <input key={fileInputKey} type="file" accept=".xlsx,.xls" onChange={handleFileUpload} className="hidden" />
           </label>
+          <Button onClick={startNewValuation} className="rounded-2xl bg-slate-700 hover:bg-slate-600">
+            New Valuation
+          </Button>
         </div>
 
         {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-red-700">{error}</div>}
@@ -417,9 +420,7 @@ export default function App() {
           </CardContent>
         </Card>
 
-        <div className="flex justify-end">
-          <Button onClick={startNewValuation} className="rounded-2xl">New Valuation</Button>
-        </div>
+        
       </div>
     </div>
   );
