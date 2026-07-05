@@ -367,19 +367,23 @@ export default function App() {
     >
       <header className="border-b border-[#222] bg-black px-6 py-5">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <div className="mb-1 text-xs font-black uppercase tracking-[0.32em] text-[#ff9900]">
-              {t.term}
-            </div>
+         <div>
+  <div className="mb-1 text-2xl font-black uppercase tracking-[-0.04em] text-[#ff9900] md:text-3xl">
+    DCF PRO
+  </div>
 
-            <h1 className="text-5xl font-black uppercase tracking-[-0.04em] text-white md:text-6xl">
-              {t.title}
-            </h1>
+  <div className="text-sm font-bold uppercase tracking-[0.28em] text-white">
+    Financial Valuation Terminal
+  </div>
 
-            <p className="mt-2 max-w-4xl text-sm font-medium text-zinc-500">
-              {t.sub}
-            </p>
-          </div>
+  <div className="mt-2 text-xs font-medium text-zinc-500">
+    by Roberto Knop
+  </div>
+
+  <p className="mt-3 max-w-4xl text-sm font-medium text-zinc-500">
+    {t.sub}
+  </p>
+</div>
 
           <div className="no-print flex flex-wrap gap-3">
             <select
