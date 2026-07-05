@@ -334,7 +334,7 @@ export default function App() {
   }
 
   const kpis = [
-    [t.npv, sh(res.npv, currency), 1],
+[t.npv, fmt(res.npv, currency), 1],
     [t.irr, res.irr === null ? "-" : pct(res.irr)],
     [t.cagr, res.cagr === null ? "-" : pct(res.cagr)],
     [
@@ -439,9 +439,9 @@ export default function App() {
                 </div>
 
                 <div
-                  className={`mt-2 font-mono font-black tracking-[-0.05em] ${
-                    k[2] ? "text-5xl text-[#ff9900]" : "text-4xl text-white"
-                  }`}
+     className={`mt-2 font-mono font-black tracking-[-0.04em] ${
+  k[2] ? "text-3xl text-[#ff9900]" : "text-2xl text-white"
+}`}
                 >
                   {k[1]}
                 </div>
